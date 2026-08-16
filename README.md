@@ -13,6 +13,8 @@ Render a git repository's **entire commit history** as one browsable, syntax-hig
 - Won't clobber a previous run — an existing output file is automatically renamed aside with a timestamp
 - Opens the finished report in your default browser when done
 - Customizable page title, accent color, background color, and a dark mode
+- Per-commit author avatars (color + initials, no external images) and file/insertion/deletion stat badges
+- Sort the report by date (oldest/newest first) right in the page — no regenerating
 - Usable as a CLI, or through a local browser-based GUI (see [Graphical interface](#graphical-interface))
 
 ## Requirements
@@ -100,8 +102,8 @@ The `.exe` bundles Node itself, but **not** Git or diff2html-cli — it still sh
 ## How it works
 
 1. Reads the repo's full commit log (oldest → newest) via `git log`.
-2. For each commit, renders a diff against its parent — or against git's empty-tree object for the very first (root) commit — using `diff2html-cli`.
-3. Concatenates every commit's date, author, subject, and rendered diff into a single self-contained HTML page.
+2. For each commit, renders a diff against its parent — or against git's empty-tree object for the very first (root) commit — using `diff2html-cli`, and pulls file/insertion/deletion counts from `git diff --shortstat`.
+3. Concatenates every commit's date, author, subject, stats, and rendered diff into a single self-contained HTML page, with a small embedded script that re-sorts the commit cards by date on request.
 
 ## Notes
 
