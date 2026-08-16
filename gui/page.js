@@ -1,5 +1,5 @@
 "use strict";
-/** The GUI's single HTML page: a form plus a live-updating log panel. */
+/** The GUI's single HTML page: a form, a repo-path autocomplete, a live theme preview, and a log panel. */
 
 function renderPage() {
   return `<!doctype html>
@@ -54,6 +54,7 @@ function renderPage() {
     font-family: inherit;
   }
   input[type="text"]:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .field { position: relative; }
   .row { display: flex; gap: 16px; }
   .row > div { flex: 1; }
   .colorRow { display: flex; align-items: center; gap: 10px; margin-top: 16px; }
@@ -77,6 +78,76 @@ function renderPage() {
   }
   button:disabled { opacity: 0.6; cursor: default; }
   button:not(:disabled):hover { filter: brightness(1.08); }
+
+  /* Repo-path autocomplete dropdown */
+  .suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 10;
+    display: none;
+  }
+  .suggestions.visible { display: block; }
+  .suggestion-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 0.88em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+  .suggestion-item span.name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .suggestion-item:hover, .suggestion-item.active { background: var(--accent-soft); }
+  .suggestion-item .badge {
+    flex-shrink: 0;
+    font-size: 0.72em;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 1px 6px;
+    border-radius: 5px;
+  }
+
+  /* Live theme preview */
+  .previewLabel { margin: 16px 0 6px; }
+  #previewCanvas { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  #previewPage {
+    --p-bg: #f4f6fb; --p-surface: #ffffff; --p-text: #1c2333; --p-muted: #6b7386;
+    --p-accent: #4f5dff; --p-accent-soft: #eef0ff; --p-border: #e4e7f0;
+    background: var(--p-bg);
+    color: var(--p-text);
+    padding: 18px 20px;
+    font-family: -apple-system, 'Segoe UI', sans-serif;
+    transition: background 0.15s;
+  }
+  #previewPage h1 { font-size: 1.15em; margin: 0 0 2px; letter-spacing: -0.02em; }
+  .previewSub { color: var(--p-muted); margin: 0 0 14px; font-size: 0.78em; }
+  .previewCard {
+    background: var(--p-surface);
+    border: 1px solid var(--p-border);
+    border-radius: 10px;
+    padding: 14px 16px 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+  .previewCard h2 { margin: 0 0 4px; font-size: 0.98em; color: var(--p-text); }
+  .previewMeta { color: var(--p-muted); margin: 0; font-size: 0.76em; }
+  .previewMeta code {
+    background: var(--p-accent-soft);
+    color: var(--p-accent);
+    padding: 2px 6px;
+    border-radius: 5px;
+    font-size: 0.95em;
+  }
+
   #log {
     margin-top: 20px;
     background: #14161f;
@@ -100,7 +171,11 @@ function renderPage() {
 
   <form id="genForm">
     <label for="repo">Repository path</label>
-    <input type="text" id="repo" name="repo" value="." placeholder="C:\\path\\to\\repo or ." required />
+    <div class="field">
+      <input type="text" id="repo" name="repo" value="." placeholder="C:\\path\\to\\repo or ." autocomplete="off"
+             role="combobox" aria-expanded="false" aria-controls="repoSuggestions" aria-autocomplete="list" required />
+      <div id="repoSuggestions" class="suggestions" role="listbox"></div>
+    </div>
 
     <label for="outFile">Output file</label>
     <input type="text" id="outFile" name="outFile" value="combined_history.html" required />
@@ -122,6 +197,18 @@ function renderPage() {
     <div class="checkRow">
       <input type="checkbox" id="open" name="open" checked />
       <label for="open">Open report when done</label>
+    </div>
+
+    <label class="previewLabel">Preview</label>
+    <div id="previewCanvas">
+      <div id="previewPage">
+        <h1 id="previewTitle">Project Change Log</h1>
+        <p class="previewSub">3 commits, generated 2026-08-16</p>
+        <div class="previewCard">
+          <h2>Example commit message</h2>
+          <p class="previewMeta">2026-08-16 12:00 &nbsp;&middot;&nbsp; Author Name &nbsp;&middot;&nbsp; <code>abc1234</code></p>
+        </div>
+      </div>
     </div>
 
     <button id="submitBtn" type="submit">Generate</button>
@@ -168,6 +255,170 @@ form.addEventListener('submit', async (e) => {
     submitBtn.textContent = 'Generate';
   }
 });
+
+// --- Repository path autocomplete ---------------------------------------
+const repoInput = document.getElementById('repo');
+const suggestBox = document.getElementById('repoSuggestions');
+let suggestTimer = null;
+let activeIndex = -1;
+
+async function fetchSuggestions(value) {
+  try {
+    const res = await fetch('/browse?path=' + encodeURIComponent(value));
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.entries || [];
+  } catch {
+    return [];
+  }
+}
+
+function renderSuggestions(entries) {
+  suggestBox.innerHTML = '';
+  activeIndex = -1;
+  if (!entries.length) {
+    suggestBox.classList.remove('visible');
+    repoInput.setAttribute('aria-expanded', 'false');
+    return;
+  }
+  entries.forEach((entry, i) => {
+    const item = document.createElement('div');
+    item.className = 'suggestion-item';
+    item.id = 'repoSuggestion-' + i;
+    item.setAttribute('role', 'option');
+    item.setAttribute('aria-selected', 'false');
+    const name = document.createElement('span');
+    name.className = 'name';
+    name.textContent = entry.name;
+    item.appendChild(name);
+    if (entry.isRepo) {
+      const badge = document.createElement('span');
+      badge.className = 'badge';
+      badge.textContent = 'git repo';
+      item.appendChild(badge);
+    }
+    item.addEventListener('mousedown', (evt) => {
+      evt.preventDefault();
+      repoInput.value = entry.path;
+      scheduleSuggest(entry.path);
+      repoInput.focus();
+    });
+    suggestBox.appendChild(item);
+  });
+  suggestBox.classList.add('visible');
+  repoInput.setAttribute('aria-expanded', 'true');
+}
+
+function scheduleSuggest(value) {
+  clearTimeout(suggestTimer);
+  suggestTimer = setTimeout(async () => {
+    renderSuggestions(await fetchSuggestions(value));
+  }, 150);
+}
+
+function highlightActive() {
+  const items = suggestBox.querySelectorAll('.suggestion-item');
+  items.forEach((it, i) => {
+    const isActive = i === activeIndex;
+    it.classList.toggle('active', isActive);
+    it.setAttribute('aria-selected', String(isActive));
+  });
+  if (activeIndex >= 0) {
+    items[activeIndex].scrollIntoView({ block: 'nearest' });
+    repoInput.setAttribute('aria-activedescendant', items[activeIndex].id);
+  } else {
+    repoInput.removeAttribute('aria-activedescendant');
+  }
+}
+
+repoInput.addEventListener('input', () => scheduleSuggest(repoInput.value));
+repoInput.addEventListener('focus', () => scheduleSuggest(repoInput.value));
+repoInput.addEventListener('blur', () => {
+  // Let a pending mousedown-on-suggestion fire before the list disappears.
+  setTimeout(() => {
+    suggestBox.classList.remove('visible');
+    repoInput.setAttribute('aria-expanded', 'false');
+  }, 150);
+});
+repoInput.addEventListener('keydown', (e) => {
+  const items = suggestBox.querySelectorAll('.suggestion-item');
+  if (!items.length || !suggestBox.classList.contains('visible')) return;
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    activeIndex = Math.min(activeIndex + 1, items.length - 1);
+    highlightActive();
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    activeIndex = Math.max(activeIndex - 1, 0);
+    highlightActive();
+  } else if (e.key === 'Enter' && activeIndex >= 0) {
+    e.preventDefault();
+    items[activeIndex].dispatchEvent(new Event('mousedown'));
+  } else if (e.key === 'Escape') {
+    suggestBox.classList.remove('visible');
+  }
+});
+
+// --- Live theme preview --------------------------------------------------
+// Mirrors lib/render.js's resolveTheme() color math so the preview matches
+// the real report exactly, without a server round trip.
+function hexToRgb(hex) {
+  let h = hex.replace('#', '');
+  if (h.length === 3) h = h.split('').map((c) => c + c).join('');
+  const n = parseInt(h, 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+function rgbToHex(rgb) {
+  return '#' + rgb.map((v) => Math.round(v).toString(16).padStart(2, '0')).join('');
+}
+function mixHex(a, b, t) {
+  const pa = hexToRgb(a), pb = hexToRgb(b);
+  return rgbToHex(pa.map((v, i) => v + (pb[i] - v) * t));
+}
+
+const titleInput = document.getElementById('title');
+const accentInput = document.getElementById('accent');
+const bgInput = document.getElementById('background');
+const darkInput = document.getElementById('dark');
+const previewPage = document.getElementById('previewPage');
+const previewTitle = document.getElementById('previewTitle');
+
+let bgTouchedByUser = false;
+bgInput.addEventListener('input', () => { bgTouchedByUser = true; });
+
+// If the user hasn't manually picked a background, toggling dark mode
+// should swap it to a sensible default instead of leaving a light
+// background under dark-mode text/card colors.
+darkInput.addEventListener('change', () => {
+  if (!bgTouchedByUser) {
+    bgInput.value = darkInput.checked ? '#12131a' : '#f4f6fb';
+  }
+  updatePreview();
+});
+
+function updatePreview() {
+  const dark = darkInput.checked;
+  const accent = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(accentInput.value) ? accentInput.value : '#4f5dff';
+  const bg = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(bgInput.value) ? bgInput.value : (dark ? '#12131a' : '#f4f6fb');
+  const surface = dark ? mixHex(bg, '#ffffff', 0.09) : '#ffffff';
+  const text = dark ? '#e8e9f3' : '#1c2333';
+  const muted = dark ? '#9198b0' : '#6b7386';
+  const border = dark ? mixHex(bg, '#ffffff', 0.16) : '#e4e7f0';
+  const accentSoft = mixHex(surface, accent, dark ? 0.3 : 0.12);
+
+  previewPage.style.setProperty('--p-bg', bg);
+  previewPage.style.setProperty('--p-surface', surface);
+  previewPage.style.setProperty('--p-text', text);
+  previewPage.style.setProperty('--p-muted', muted);
+  previewPage.style.setProperty('--p-accent', accent);
+  previewPage.style.setProperty('--p-accent-soft', accentSoft);
+  previewPage.style.setProperty('--p-border', border);
+
+  previewTitle.textContent = titleInput.value.trim() || 'Project Change Log';
+}
+
+[titleInput, accentInput, bgInput].forEach((el) => el.addEventListener('input', updatePreview));
+updatePreview();
 </script>
 </body>
 </html>`;

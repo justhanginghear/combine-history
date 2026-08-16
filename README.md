@@ -81,6 +81,8 @@ npm run gui
 
 This starts a local server at `http://127.0.0.1:4173/` and opens it in your browser automatically. Fill in the repo path and any customization options, hit **Generate**, and watch the render progress stream in live — no different from the CLI under the hood, just a form in front of it. Nothing leaves your machine; the server only listens on `127.0.0.1`.
 
+The repository field autocompletes as you type — it lists matching subdirectories and flags which ones are git repos, so you can arrow-key/click your way to the right path instead of typing it out by hand. And a live preview panel mirrors what your title/accent/background/dark-mode choices will actually look like in the generated report, updating instantly with no server round trip.
+
 Use `PORT=<port> npm run gui` to run it on a different port.
 
 ### Standalone .exe

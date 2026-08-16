@@ -8,6 +8,7 @@
 const http = require("http");
 const { renderHistory } = require("../lib/render");
 const { openTarget } = require("../lib/open");
+const { suggestPaths } = require("../lib/browse");
 const { renderPage } = require("./page");
 
 const DEFAULT_PORT = 4173;
@@ -73,11 +74,27 @@ async function handleGenerate(req, res) {
   res.end();
 }
 
+function handleBrowse(req, res) {
+  const url = new URL(req.url, "http://localhost");
+  const result = suggestPaths(url.searchParams.get("path") || "");
+  res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+  res.end(JSON.stringify(result));
+}
+
 function createServer() {
   return http.createServer((req, res) => {
     if (req.method === "GET" && req.url === "/") {
       res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
       res.end(renderPage());
+      return;
+    }
+    if (req.method === "GET" && req.url.startsWith("/browse")) {
+      try {
+        handleBrowse(req, res);
+      } catch (err) {
+        res.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
+        res.end(`Internal error: ${err.message}`);
+      }
       return;
     }
     if (req.method === "POST" && req.url === "/generate") {
