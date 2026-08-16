@@ -109,10 +109,23 @@ function createServer() {
   });
 }
 
-function start(port = DEFAULT_PORT) {
+const MAX_PORT_ATTEMPTS = 20;
+
+// If the port's taken — most likely by a previous instance of this same
+// GUI still running in the background — try the next few ports instead of
+// just crashing. Whoever's on the far end of a double-click has no way to
+// pass a different --port, so failing outright would strand them.
+function start(port = DEFAULT_PORT, attemptsLeft = MAX_PORT_ATTEMPTS) {
   const server = createServer();
   return new Promise((resolve, reject) => {
-    server.on("error", reject);
+    server.on("error", (err) => {
+      if (err.code === "EADDRINUSE" && attemptsLeft > 1) {
+        server.close();
+        resolve(start(port + 1, attemptsLeft - 1));
+      } else {
+        reject(err);
+      }
+    });
     server.listen(port, "127.0.0.1", () => {
       const url = `http://127.0.0.1:${port}/`;
       console.log(`combine-history GUI running at ${url}`);
@@ -127,6 +140,13 @@ if (require.main === module) {
   start(port).catch((err) => {
     console.error(`Failed to start GUI server: ${err.message}`);
     process.exitCode = 1;
+    // Launched by double-clicking the packaged .exe, this is the only
+    // console window there is — without a pause it flashes and closes
+    // before anyone can read the error.
+    if (process.stdin.isTTY) {
+      process.stdout.write("\nPress Enter to exit...");
+      process.stdin.once("data", () => process.exit(1));
+    }
   });
 }
 
