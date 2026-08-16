@@ -2,7 +2,15 @@
   "name": "combine-history",
   "version": "1.0.0",
   "description": "Render a git repository's entire commit history as one browsable, syntax-highlighted HTML changelog.",
-  "keywords": ["git", "changelog", "diff", "html", "diff2html", "history", "cli"],
+  "keywords": [
+    "git",
+    "changelog",
+    "diff",
+    "html",
+    "diff2html",
+    "history",
+    "cli"
+  ],
   "license": "MIT",
   "author": "hanging <justhanginghear@gmail.com>",
   "main": "./lib/render.js",
@@ -11,7 +19,12 @@
   },
   "scripts": {
     "start": "node bin/combine-history.js",
-    "gui": "node gui/server.js"
+    "gui": "node gui/server.js",
+    "build:exe": "pkg gui/server.js --config package.json --targets node22-win-x64 --output dist/combine-history-gui.exe"
+  },
+  "pkg": {
+    "scripts": ["lib/**/*.js", "gui/**/*.js"],
+    "assets": []
   },
   "engines": {
     "node": ">=16"
@@ -23,5 +36,8 @@
   "bugs": {
     "url": "https://github.com/justhanginghear/combine-history/issues"
   },
-  "homepage": "https://github.com/justhanginghear/combine-history#readme"
+  "homepage": "https://github.com/justhanginghear/combine-history#readme",
+  "devDependencies": {
+    "@yao-pkg/pkg": "^6.22.0"
+  }
 }

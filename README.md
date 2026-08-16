@@ -83,6 +83,18 @@ This starts a local server at `http://127.0.0.1:4173/` and opens it in your brow
 
 Use `PORT=<port> npm run gui` to run it on a different port.
 
+### Standalone .exe
+
+Don't want to install Node to use the GUI? Build a self-contained Windows executable that bundles the Node runtime:
+
+```bash
+npm run build:exe
+```
+
+This produces `dist/combine-history-gui.exe` (~55MB, via [@yao-pkg/pkg](https://github.com/yao-pkg/pkg)). The first build downloads a prebuilt Node binary to package (needs network access; subsequent builds reuse the cached copy). Double-click the `.exe`, or run it from a terminal, and it opens the same GUI in your browser.
+
+The `.exe` bundles Node itself, but **not** Git or diff2html-cli — it still shells out to your system's `git`, and to `diff2html-cli` (or `npx`, which needs a separate Node/npm install) the same way the CLI does. It's "no Node needed to run the GUI," not "zero external dependencies."
+
 ## How it works
 
 1. Reads the repo's full commit log (oldest → newest) via `git log`.
