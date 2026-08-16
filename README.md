@@ -71,6 +71,18 @@ combine-history ~/projects/my-app changelog.html --title "My App Changelog" --ac
 combine-history --help
 ```
 
+## Graphical interface
+
+Prefer a form over a terminal? Run:
+
+```bash
+npm run gui
+```
+
+This starts a local server at `http://127.0.0.1:4173/` and opens it in your browser automatically. Fill in the repo path and any customization options, hit **Generate**, and watch the render progress stream in live — no different from the CLI under the hood, just a form in front of it. Nothing leaves your machine; the server only listens on `127.0.0.1`.
+
+Use `PORT=<port> npm run gui` to run it on a different port.
+
 ## How it works
 
 1. Reads the repo's full commit log (oldest → newest) via `git log`.

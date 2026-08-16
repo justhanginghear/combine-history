@@ -10,7 +10,8 @@
     "combine-history": "./bin/combine-history.js"
   },
   "scripts": {
-    "start": "node bin/combine-history.js"
+    "start": "node bin/combine-history.js",
+    "gui": "node gui/server.js"
   },
   "engines": {
     "node": ">=16"

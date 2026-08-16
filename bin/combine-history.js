@@ -7,10 +7,8 @@
  * See README.md for full usage, or run `combine-history --help`.
  */
 
-const { spawn } = require("child_process");
-const os = require("os");
-const path = require("path");
 const { renderHistory } = require("../lib/render");
+const { openTarget } = require("../lib/open");
 
 const HELP = `combine-history — render a git repo's full history as one browsable HTML changelog
 
@@ -76,19 +74,6 @@ function parseArgs(argv) {
   return { positional, opts };
 }
 
-// Launch the finished file in the default browser so there's nothing to
-// hunt down manually once the script exits.
-function openInBrowser(file) {
-  const platform = os.platform();
-  const cmd = platform === "win32" ? "cmd" : platform === "darwin" ? "open" : "xdg-open";
-  const args = platform === "win32" ? ["/c", "start", "", file] : [file];
-  try {
-    spawn(cmd, args, { stdio: "ignore", detached: true }).unref();
-  } catch {
-    console.log(`(Could not auto-open the file — open it manually: ${file})`);
-  }
-}
-
 function main() {
   const { positional, opts } = parseArgs(process.argv.slice(2));
 
@@ -116,7 +101,9 @@ function main() {
   })
     .then((result) => {
       console.log(`\nDone -> ${result.outFile} (${result.rendered} rendered, ${result.skipped} skipped)`);
-      if (opts.open) openInBrowser(result.outFile);
+      if (opts.open && !openTarget(result.outFile)) {
+        console.log(`(Could not auto-open the file — open it manually: ${result.outFile})`);
+      }
     })
     .catch((err) => {
       console.error(`\n${err.message}`);
