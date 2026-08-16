@@ -5,11 +5,12 @@
   "keywords": ["git", "changelog", "diff", "html", "diff2html", "history", "cli"],
   "license": "MIT",
   "author": "hanging <justhanginghear@gmail.com>",
+  "main": "./lib/render.js",
   "bin": {
-    "combine-history": "./combine_history.js"
+    "combine-history": "./bin/combine-history.js"
   },
   "scripts": {
-    "start": "node combine_history.js"
+    "start": "node bin/combine-history.js"
   },
   "engines": {
     "node": ">=16"

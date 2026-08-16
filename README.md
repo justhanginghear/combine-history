@@ -12,6 +12,8 @@ Render a git repository's **entire commit history** as one browsable, syntax-hig
 - Merge commits are diffed against their first parent (the conventional "what did this merge bring in" view)
 - Won't clobber a previous run — an existing output file is automatically renamed aside with a timestamp
 - Opens the finished report in your default browser when done
+- Customizable page title, accent color, background color, and a dark mode
+- Usable as a CLI, or through a local browser-based GUI (see [Graphical interface](#graphical-interface))
 
 ## Requirements
 
@@ -26,7 +28,7 @@ Clone this repo and run it directly:
 ```bash
 git clone https://github.com/justhanginghear/combine-history.git
 cd combine-history
-node combine_history.js /path/to/some/repo
+node bin/combine-history.js /path/to/some/repo
 ```
 
 Or install it globally so `combine-history` is available anywhere:
@@ -39,7 +41,7 @@ combine-history /path/to/some/repo
 ## Usage
 
 ```bash
-combine-history [repo] [outFile]
+combine-history [repo] [outFile] [options]
 ```
 
 | Argument  | Description                                  | Default                  |
@@ -47,12 +49,23 @@ combine-history [repo] [outFile]
 | `repo`    | Path to the git repository to render          | current directory (`.`)   |
 | `outFile` | Path to write the HTML report to               | `combined_history.html`   |
 
+| Option              | Description                                        | Default              |
+|---------------------|-----------------------------------------------------|-----------------------|
+| `--title <text>`    | Page title / heading                                | `Project Change Log`  |
+| `--accent <#hex>`   | Accent color                                        | `#4f5dff`             |
+| `--background <#hex>` (or `--bg`) | Page background color                | `#f4f6fb` (or a dark slate with `--dark`) |
+| `--dark`            | Use a dark color scheme                             | off                    |
+| `--no-open`         | Don't auto-open the report when done                | off (auto-opens)       |
+
 ```bash
 # Render the current directory's history to ./combined_history.html
 combine-history
 
 # Render a specific repo to a specific file
 combine-history ~/projects/my-app changelog.html
+
+# Customize the look
+combine-history ~/projects/my-app changelog.html --title "My App Changelog" --accent "#e0524d" --dark
 
 # See all options
 combine-history --help
