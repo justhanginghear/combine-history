@@ -1,0 +1,15 @@
+node_modules/
+npm-debug.log*
+
+# Unrelated sibling project living in this same folder — not part of this repo
+dwt-tracker/
+.claude/
+
+# Generated reports (this is the tool's own output, not source)
+combined_history.html
+combined_history.*.html
+*.html.tmp
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db

@@ -1,0 +1,25 @@
+{
+  "name": "combine-history",
+  "version": "1.0.0",
+  "description": "Render a git repository's entire commit history as one browsable, syntax-highlighted HTML changelog.",
+  "keywords": ["git", "changelog", "diff", "html", "diff2html", "history", "cli"],
+  "license": "MIT",
+  "author": "hanging <justhanginghear@gmail.com>",
+  "bin": {
+    "combine-history": "./combine_history.js"
+  },
+  "scripts": {
+    "start": "node combine_history.js"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/justhanginghear/combine-history.git"
+  },
+  "bugs": {
+    "url": "https://github.com/justhanginghear/combine-history/issues"
+  },
+  "homepage": "https://github.com/justhanginghear/combine-history#readme"
+}
