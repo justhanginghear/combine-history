@@ -2,7 +2,7 @@ node_modules/
 npm-debug.log*
 
 # Build output (packaged .exe) — a build artifact, not source
-dist/
+
 
 # Unrelated sibling project living in this same folder — not part of this repo
 dwt-tracker/
