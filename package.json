@@ -1,7 +1,7 @@
 {
   "name": "combine-history",
   "version": "1.0.0",
-  "description": "Render a git repository's entire commit history as one browsable, syntax-highlighted HTML changelog.",
+  "description": "Turn any git repo's history into one self-contained, browsable HTML changelog — as a CLI, a local GUI, or a standalone .exe.",
   "keywords": [
     "git",
     "changelog",
@@ -9,7 +9,10 @@
     "html",
     "diff2html",
     "history",
-    "cli"
+    "cli",
+    "gui",
+    "exe",
+    "windows"
   ],
   "license": "MIT",
   "author": "hanging <justhanginghear@gmail.com>",

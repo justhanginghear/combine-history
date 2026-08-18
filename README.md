@@ -1,9 +1,12 @@
 # combine-history
 
-Render a git repository's **entire commit history** as one browsable, syntax-highlighted HTML changelog — every commit's diff, preceded by its date, author, and message.
+**Turn any git repo's history into one self-contained, browsable HTML changelog.**
+
+Every commit's diff, author, date, and file stats — rendered, styled, sortable, and yours to open, share, or archive as a single file. Run it as a CLI, a local GUI, or a standalone Windows `.exe`; no server, no database, no external viewer needed.
 
 ![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Node.js >=16](https://img.shields.io/badge/node-%3E%3D16-brightgreen.svg)
+![Platform: CLI | GUI | .exe](https://img.shields.io/badge/interface-CLI%20%7C%20GUI%20%7C%20.exe-6f42c1.svg)
 
 ## Features
 
