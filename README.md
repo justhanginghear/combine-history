@@ -8,6 +8,10 @@ Every commit's diff, author, date, and file stats — rendered, styled, sortable
 ![Node.js >=16](https://img.shields.io/badge/node-%3E%3D16-brightgreen.svg)
 ![Platform: CLI | GUI | .exe](https://img.shields.io/badge/interface-CLI%20%7C%20GUI%20%7C%20.exe-6f42c1.svg)
 
+## Download
+Full working .exe for this project can be found in dist
+
+
 ## Features
 
 - Walks the full history of a repo, oldest commit first, and renders each commit's diff with [diff2html](https://github.com/rtfpessoa/diff2html)
