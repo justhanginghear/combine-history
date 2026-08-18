@@ -1,19 +1,19 @@
 #!/usr/bin/env node
 /**
- * combine-history CLI
+ * git-timelapse CLI
  * Builds ONE html file covering the whole git history: every commit's
  * diff, each preceded by its date/author/message.
  *
- * See README.md for full usage, or run `combine-history --help`.
+ * See README.md for full usage, or run `git-timelapse --help`.
  */
 
 const { renderHistory } = require("../lib/render");
 const { openTarget } = require("../lib/open");
 
-const HELP = `combine-history — render a git repo's full history as one browsable HTML changelog
+const HELP = `git-timelapse — render a git repo's full history as one browsable HTML changelog
 
 Usage:
-  combine-history [repo] [outFile] [options]
+  git-timelapse [repo] [outFile] [options]
 
 Arguments:
   repo      Path to the git repository (default: current directory)

@@ -1,4 +1,4 @@
-# combine-history
+# git-timelapse
 
 **Turn any git repo's history into one self-contained, browsable HTML changelog.**
 
@@ -31,22 +31,22 @@ Every commit's diff, author, date, and file stats — rendered, styled, sortable
 Clone this repo and run it directly:
 
 ```bash
-git clone https://github.com/justhanginghear/combine-history.git
-cd combine-history
-node bin/combine-history.js /path/to/some/repo
+git clone https://github.com/justhanginghear/git-timelapse.git
+cd git-timelapse
+node bin/git-timelapse.js /path/to/some/repo
 ```
 
-Or install it globally so `combine-history` is available anywhere:
+Or install it globally so `git-timelapse` is available anywhere:
 
 ```bash
 npm install -g .
-combine-history /path/to/some/repo
+git-timelapse /path/to/some/repo
 ```
 
 ## Usage
 
 ```bash
-combine-history [repo] [outFile] [options]
+git-timelapse [repo] [outFile] [options]
 ```
 
 | Argument  | Description                                  | Default                  |
@@ -64,16 +64,16 @@ combine-history [repo] [outFile] [options]
 
 ```bash
 # Render the current directory's history to ./combined_history.html
-combine-history
+git-timelapse
 
 # Render a specific repo to a specific file
-combine-history ~/projects/my-app changelog.html
+git-timelapse ~/projects/my-app changelog.html
 
 # Customize the look
-combine-history ~/projects/my-app changelog.html --title "My App Changelog" --accent "#e0524d" --dark
+git-timelapse ~/projects/my-app changelog.html --title "My App Changelog" --accent "#e0524d" --dark
 
 # See all options
-combine-history --help
+git-timelapse --help
 ```
 
 ## Graphical interface
@@ -98,7 +98,7 @@ Don't want to install Node to use the GUI? Build a self-contained Windows execut
 npm run build:exe
 ```
 
-This produces `dist/combine-history-gui.exe` (~55MB, via [@yao-pkg/pkg](https://github.com/yao-pkg/pkg)). The first build downloads a prebuilt Node binary to package (needs network access; subsequent builds reuse the cached copy). Double-click the `.exe`, or run it from a terminal, and it opens the same GUI in your browser.
+This produces `dist/git-timelapse-gui.exe` (~55MB, via [@yao-pkg/pkg](https://github.com/yao-pkg/pkg)). The first build downloads a prebuilt Node binary to package (needs network access; subsequent builds reuse the cached copy). Double-click the `.exe`, or run it from a terminal, and it opens the same GUI in your browser.
 
 The `.exe` bundles Node itself, but **not** Git or diff2html-cli — it still shells out to your system's `git`, and to `diff2html-cli` (or `npx`, which needs a separate Node/npm install) the same way the CLI does. It's "no Node needed to run the GUI," not "zero external dependencies."
 

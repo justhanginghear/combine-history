@@ -1,6 +1,6 @@
 "use strict";
 /**
- * Local GUI for combine-history: a single-page form served over HTTP,
+ * Local GUI for git-timelapse: a single-page form served over HTTP,
  * backed by the same lib/render.js the CLI uses. No framework, no
  * external deps — keeps this trivial to bundle into a standalone .exe.
  */
@@ -128,7 +128,7 @@ function start(port = DEFAULT_PORT, attemptsLeft = MAX_PORT_ATTEMPTS) {
     });
     server.listen(port, "127.0.0.1", () => {
       const url = `http://127.0.0.1:${port}/`;
-      console.log(`combine-history GUI running at ${url}`);
+      console.log(`git-timelapse GUI running at ${url}`);
       openTarget(url);
       resolve(server);
     });

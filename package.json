@@ -1,5 +1,5 @@
 {
-  "name": "combine-history",
+  "name": "git-timelapse",
   "version": "1.0.0",
   "description": "Turn any git repo's history into one self-contained, browsable HTML changelog — as a CLI, a local GUI, or a standalone .exe.",
   "keywords": [
@@ -18,12 +18,12 @@
   "author": "hanging <justhanginghear@gmail.com>",
   "main": "./lib/render.js",
   "bin": {
-    "combine-history": "./bin/combine-history.js"
+    "git-timelapse": "./bin/git-timelapse.js"
   },
   "scripts": {
-    "start": "node bin/combine-history.js",
+    "start": "node bin/git-timelapse.js",
     "gui": "node gui/server.js",
-    "build:exe": "pkg gui/server.js --config package.json --targets node22-win-x64 --output dist/combine-history-gui.exe"
+    "build:exe": "pkg gui/server.js --config package.json --targets node22-win-x64 --output dist/git-timelapse-gui.exe"
   },
   "pkg": {
     "scripts": ["lib/**/*.js", "gui/**/*.js"],
@@ -34,12 +34,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/justhanginghear/combine-history.git"
+    "url": "git+https://github.com/justhanginghear/git-timelapse.git"
   },
   "bugs": {
-    "url": "https://github.com/justhanginghear/combine-history/issues"
+    "url": "https://github.com/justhanginghear/git-timelapse/issues"
   },
-  "homepage": "https://github.com/justhanginghear/combine-history#readme",
+  "homepage": "https://github.com/justhanginghear/git-timelapse#readme",
   "devDependencies": {
     "@yao-pkg/pkg": "^6.22.0"
   }

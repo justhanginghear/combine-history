@@ -6,7 +6,7 @@ function renderPage() {
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>combine-history</title>
+<title>git-timelapse</title>
 <style>
   :root {
     --bg: #f4f6fb;
@@ -166,7 +166,7 @@ function renderPage() {
 </style>
 </head>
 <body>
-  <h1>combine-history</h1>
+  <h1>git-timelapse</h1>
   <p class="tagline">Render a git repo's full history as one browsable HTML changelog.</p>
 
   <form id="genForm">
